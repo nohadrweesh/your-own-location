@@ -1,0 +1,45 @@
+package com.example.yourownlocation;
+
+/**
+ * Created by Speed on 13/10/2017.
+ */
+
+class LocationObject {
+    private double mLongitude;
+    private double mLatitude;
+    private double mAltitude;
+
+    public LocationObject() {
+    }
+
+    public void setLongitude(double longitude) {
+
+        mLongitude = longitude;
+    }
+
+    public void setLatitude(double latitude) {
+        mLatitude = latitude;
+    }
+
+    public void setAltitude(double altitude) {
+        mAltitude = altitude;
+    }
+
+    public LocationObject(double longitude, double latitude, double altitude) {
+        mLongitude = longitude;
+        mLatitude = latitude;
+        mAltitude = altitude;
+    }
+
+    public double getLongitude() {
+        return mLongitude;
+    }
+
+    public double getLatitude() {
+        return mLatitude;
+    }
+
+    public double getAltitude() {
+        return mAltitude;
+    }
+}
