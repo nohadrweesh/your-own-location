@@ -42,4 +42,9 @@ class LocationObject {
     public double getAltitude() {
         return mAltitude;
     }
+
+    @Override
+    public String toString() {
+        return "location @ "+mLongitude+" mlong &@ "+mLatitude+" mLat &@ "+mAltitude+" mAlt";
+    }
 }

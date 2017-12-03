@@ -6,41 +6,59 @@
     android:orientation="vertical"
     >
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#71BCFA"
-        android:padding="6dip" >
 
-        <TextView
-            android:id="@+id/textViewTitle"
-            android:layout_width="0dip"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="2dp"
-            android:layout_weight="0.12"
-            android:text="@string/service_title"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
-
-        <ProgressBar
-            android:id="@+id/loadingProgressBar"
-            android:layout_width="28dp"
-            android:layout_height="28dp" />
-    </LinearLayout>
 
      <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#71BCFA"
+        android:background="#9C27B0"
         android:padding="6dip"  >
 
 
-        <Button
-            android:id="@+id/buttonAddToDo"
-            android:layout_width="64dip"
-            android:layout_height="wrap_content"
-            android:onClick="addItem"
-            android:text="@string/add_button_text" />
+         <Button
+             android:id="@+id/buttonAddToDo"
+             android:layout_width="0dp"
+             android:layout_height="wrap_content"
+             android:onClick="addItem"
+             android:text="@string/add_button_text"
+             android:layout_weight="0.12"
+             android:background="#00BCD4"/>
 
+         <ProgressBar
+             android:id="@+id/loadingProgressBar"
+             android:layout_width="28dp"
+             android:layout_height="28dp"
+             android:layout_gravity="center_vertical"/>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:padding="6dp">
+
+        <TextView
+            android:id="@+id/longitudeLabelTv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="longitude"/>
+
+        <TextView
+            android:id="@+id/latitudeLabelTv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="latitude"/>
+
+        <TextView
+            android:id="@+id/altitudeLabelTv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="altitude"/>
     </LinearLayout>
 
     <ListView

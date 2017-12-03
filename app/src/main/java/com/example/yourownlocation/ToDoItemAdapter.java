@@ -49,9 +49,9 @@ public class ToDoItemAdapter extends ArrayAdapter<ToDoItem> {
         final TextView latitudeTv=(TextView)row.findViewById(R.id.latitudeTv);
         final TextView altitudeTv=(TextView)row.findViewById(R.id.altitudeTv);
 
-        longitudeTv.setText(currentItem.getLongitude());
-        longitudeTv.setText(currentItem.getLatitude());
-        longitudeTv.setText(currentItem.getAltitude());
+        longitudeTv.setText(String.format("%.02f",Double.valueOf(currentItem.getLongitude())));
+        latitudeTv.setText(String.format("%.02f",Double.valueOf(currentItem.getLatitude())));
+        altitudeTv.setText(String.format("%.02f",Double.valueOf(currentItem.getAltitude())));
         /*final CheckBox checkBox = (CheckBox) row.findViewById(R.id.checkToDoItem);
         checkBox.setText(currentItem.getText());
         checkBox.setChecked(false);

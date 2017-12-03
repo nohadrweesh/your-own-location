@@ -3,15 +3,22 @@ package com.example.yourownlocation;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -38,7 +45,13 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static com.google.android.gms.plus.PlusOneDummyView.TAG;
+
 public class ToDoActivity extends Activity {
+    final private int REQUEST_CODE_ASK_PERMISSIONS = 123;
+    private FusedLocationProviderClient mFusedLocationProviderClient;
+    public static LocationObject locationObject =new LocationObject();
 
     /**
      * Mobile Service Client reference
@@ -122,11 +135,15 @@ public class ToDoActivity extends Activity {
 
             // Load the items from the Mobile Service
             refreshItemsFromTable();
+            for(int i=0;i<mAdapter.getCount();i++){
+                Log.d(TAG, "refreshItems Demo from oncreate: item is "+mAdapter.getItem(i)+"\n");
+            }
+
 
         } catch (MalformedURLException e) {
             createAndShowDialog(new Exception("There was an error creating the Mobile Service. Verify the URL"), "Error");
         } catch (Exception e){
-            createAndShowDialog(e, "Error");
+            createAndShowDialog(e, "Error from onCreate");
         }
     }
 
@@ -213,24 +230,65 @@ public class ToDoActivity extends Activity {
         }
 
         // Create a new item
-        final ToDoItem item = new ToDoItem();
+
 
         //item.setText(mTextNewToDo.getText().toString());
         //item.setComplete(false);
 
-        LocationManipulating locationManipulating=new LocationManipulating(this);
-        LocationObject locationObject=locationManipulating.getLocation();
+        //LocationManipulating locationManipulating=new LocationManipulating(this);
+       // LocationObject locationObject=locationManipulating.getLocation();
+        mFusedLocationProviderClient=new FusedLocationProviderClient(this);
 
+
+        int hasLocationPermission= ContextCompat.checkSelfPermission(this,ACCESS_COARSE_LOCATION);
+        if(hasLocationPermission== PackageManager.PERMISSION_GRANTED){
+            mFusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    if(location != null) {
+                        Toast.makeText(getApplicationContext(), "your location is set to "+location.toString(), Toast.LENGTH_LONG).show();
+
+                        double latitude=location.getLatitude();
+                        double longitude=location.getLongitude();
+                        double altitude=location.getAltitude();
+                        locationObject.setLongitude(longitude);
+                        locationObject.setLatitude(latitude);
+                        locationObject.setAltitude(altitude);
+
+                        Log.d(TAG, "onSuccess: LocationObject is "+locationObject.toString());
+
+                        //Log.d(TAG, "onSuccess: item is "+item.toString());
+
+                    }
+
+                }
+            });
+            Log.d(TAG, "addItem: end if with: "+locationObject.toString());
+        }else{
+
+
+        }
+        final  ToDoItem item = new ToDoItem();
         item.setAltitude(locationObject.getAltitude());
         item.setLongitude(locationObject.getLongitude());
         item.setLatitude(locationObject.getLatitude());
+
+
+
+        Log.d(TAG, "entity addItem: after if with: "+locationObject.toString()+"\nand with: "+item.toString());
+
+//        item.setAltitude(locationObject.getAltitude());
+//        item.setLongitude(locationObject.getLongitude());
+//        item.setLatitude(locationObject.getLatitude());
 
         // Insert the new item
         AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>(){
             @Override
             protected Void doInBackground(Void... params) {
                 try {
+                    Log.d(TAG, "doInBackground: entity item before calling is "+item.toString());
                     final ToDoItem entity = addItemInTable(item);
+                    Log.d(TAG, "doInBackground: entity is "+entity.toString());
 
                     runOnUiThread(new Runnable() {
                         @Override
@@ -241,7 +299,7 @@ public class ToDoActivity extends Activity {
                         }
                     });
                 } catch (final Exception e) {
-                    createAndShowDialogFromTask(e, "Error");
+                    createAndShowDialogFromTask(e, "Error while adding new item");
                 }
                 return null;
             }
@@ -259,7 +317,9 @@ public class ToDoActivity extends Activity {
      *            The item to Add
      */
     public ToDoItem addItemInTable(ToDoItem item) throws ExecutionException, InterruptedException {
+        Log.d(TAG, "addItemInTable: entity item is "+item.toString());
         ToDoItem entity = mToDoTable.insert(item).get();
+        Log.d(TAG, "addItemInTable: entity is "+entity.toString());
         return entity;
     }
 
@@ -288,11 +348,12 @@ public class ToDoActivity extends Activity {
 
                             for (ToDoItem item : results) {
                                 mAdapter.add(item);
+                                Log.d(TAG, "refreshItems: item is "+item.toString()+"\n");
                             }
                         }
                     });
                 } catch (final Exception e){
-                    createAndShowDialogFromTask(e, "Error");
+                    createAndShowDialogFromTask(e, "Error while refresh item");
                 }
 
                 return null;
@@ -358,7 +419,7 @@ public class ToDoActivity extends Activity {
                     syncContext.initialize(localStore, handler).get();
 
                 } catch (final Exception e) {
-                    createAndShowDialogFromTask(e, "Error");
+                    createAndShowDialogFromTask(e, "Error while initLocalStore");
                 }
 
                 return null;
@@ -400,11 +461,11 @@ public class ToDoActivity extends Activity {
      * @param title
      *            The dialog title
      */
-    private void createAndShowDialogFromTask(final Exception exception, String title) {
+    private void createAndShowDialogFromTask(final Exception exception, final String title) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                createAndShowDialog(exception, "Error");
+                createAndShowDialog(exception, title);
             }
         });
     }
